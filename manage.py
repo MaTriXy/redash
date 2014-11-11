@@ -42,6 +42,7 @@ def check_settings():
 
 @manager.command
 def import_events(events_file):
+    # TODO: remove this code past 1/11/2014.
     import json
     from collections import Counter
 
@@ -52,20 +53,14 @@ def import_events(events_file):
             try:
                 event = json.loads(line)
 
-                user = event.pop('user_id')
-                action = event.pop('action')
-                object_type = event.pop('object_type')
-                object_id = event.pop('object_id', None)
+                object_type = event.get('object_type', None)
+                object_id = event.get('object_id', None)
 
                 if object_id == 'dashboard' and object_type == 'dashboard':
                     count['bad dashboard id'] += 1
                     continue
 
-                created_at = datetime.datetime.utcfromtimestamp(event.pop('timestamp'))
-                additional_properties = json.dumps(event)
-
-                models.Event.create(user=user, action=action, object_type=object_type, object_id=object_id,
-                                    additional_properties=additional_properties, created_at=created_at)
+                models.Event.record(event)
 
                 count['imported'] += 1
 
@@ -132,6 +127,45 @@ def delete(email):
     deleted_count = models.User.delete().where(models.User.email == email).execute()
     print "Deleted %d users." % deleted_count
 
+
+@users_manager.option('password', help="new password for the user")
+@users_manager.option('email', help="email address of the user to change password for")
+def password(email, password):
+    try:
+        user = models.User.get_by_email(email)
+
+        user.hash_password(password)
+        user.save()
+
+        print "User updated."
+    except models.User.DoesNotExist:
+        print "User [%s] not found." % email
+
+
+@users_manager.option('email', help="email address of the user to grant admin to")
+def grant_admin(email):
+    try:
+        user = models.User.get_by_email(email)
+
+        user.groups.append('admin')
+        user.save()
+
+        print "User updated."
+    except models.User.DoesNotExist:
+        print "User [%s] not found." % email
+
+
+# it should be named just "list", but then it will collide with "list" data sources.
+# TODO: need to split to multiple files.
+@users_manager.command
+def list_users():
+    """List all users"""
+    for i, user in enumerate(models.User.select()):
+        if i > 0:
+            print "-"*20
+
+        print "Id: {}\nName: {}\nEmail: {}".format(user.id, user.name.encode('utf-8'), user.email)
+
 @data_sources_manager.command
 def import_from_settings(name=None):
     """Import data source from settings (env variables)."""
@@ -146,8 +180,12 @@ def import_from_settings(name=None):
 @data_sources_manager.command
 def list():
     """List currently configured data sources"""
-    for ds in models.DataSource.select():
-        print "Name: {}\nType: {}\nOptions: {}".format(ds.name, ds.type, ds.options)
+    for i, ds in enumerate(models.DataSource.select()):
+        if i > 0:
+            print "-"*20
+
+        print "Id: {}\nName: {}\nType: {}\nOptions: {}".format(ds.id, ds.name, ds.type, ds.options)
+
 
 @data_sources_manager.command
 def new(name, type, options):

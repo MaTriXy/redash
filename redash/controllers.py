@@ -10,23 +10,20 @@ import json
 import numbers
 import cStringIO
 import datetime
+import logging
 
 from flask import render_template, send_from_directory, make_response, request, jsonify, redirect, \
     session, url_for
 from flask.ext.restful import Resource, abort
 from flask_login import current_user, login_user, logout_user
-
 import sqlparse
-import events
-from permissions import require_permission
 
 from redash import redis_connection, statsd_client, models, settings, utils, __version__
 from redash.wsgi import app, auth, api
+from redash.tasks import QueryTask, record_event
+from redash.cache import headers as cache_headers
+from redash.permissions import require_permission
 
-import logging
-from tasks import QueryTask
-
-from cache import headers as cache_headers
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -69,8 +66,7 @@ def login():
         return redirect(request.args.get('next') or '/')
 
     if not settings.PASSWORD_LOGIN_ENABLED:
-        blueprint = app.extensions['googleauth'].blueprint
-        return redirect(url_for("%s.login" % blueprint.name, next=request.args.get('next')))
+        return redirect(url_for("google_oauth.authorize", next=request.args.get('next')))
 
     if request.method == 'POST':
         user = models.User.select().where(models.User.email == request.form['username']).first()
@@ -84,7 +80,7 @@ def login():
                            analytics=settings.ANALYTICS,
                            next=request.args.get('next'),
                            username=request.form.get('username', ''),
-                           show_google_openid=settings.GOOGLE_OPENID_ENABLED)
+                           show_google_openid=settings.GOOGLE_OAUTH_ENABLED)
 
 
 @app.route('/logout')
@@ -159,7 +155,7 @@ class EventAPI(BaseResource):
     def post(self):
         events_list = request.get_json(force=True)
         for event in events_list:
-            events.record_event(event)
+            record_event.delay(event)
 
 
 api.add_resource(EventAPI, '/api/events', endpoint='events')
@@ -280,6 +276,14 @@ api.add_resource(WidgetListAPI, '/api/widgets', endpoint='widgets')
 api.add_resource(WidgetAPI, '/api/widgets/<int:widget_id>', endpoint='widget')
 
 
+class QuerySearchAPI(BaseResource):
+    @require_permission('view_query')
+    def get(self):
+        term = request.args.get('q', '')
+
+        return [q.to_dict() for q in models.Query.search(term)]
+
+
 class QueryListAPI(BaseResource):
     @require_permission('create_query')
     def post(self):
@@ -328,6 +332,7 @@ class QueryAPI(BaseResource):
         else:
             abort(404, message="Query not found.")
 
+api.add_resource(QuerySearchAPI, '/api/queries/search', endpoint='queries_search')
 api.add_resource(QueryListAPI, '/api/queries', endpoint='queries')
 api.add_resource(QueryAPI, '/api/queries/<query_id>', endpoint='query')
 

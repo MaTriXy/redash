@@ -14,7 +14,8 @@ angular.module('redash', [
     'ui.bootstrap',
     'smartTable.table',
     'ngResource',
-    'ngRoute'
+    'ngRoute',
+    'ui.select'
   ]).config(['$routeProvider', '$locationProvider', '$compileProvider', 'growlProvider',
     function ($routeProvider, $locationProvider, $compileProvider, growlProvider) {
       if (featureFlags.clientSideMetrics) {
@@ -54,6 +55,11 @@ angular.module('redash', [
             return Query.newQuery();
           }]
         }
+      });
+      $routeProvider.when('/queries/search', {
+        templateUrl: '/views/queries_search_results.html',
+        controller: 'QuerySearchCtrl',
+        reloadOnSearch: true,
       });
       $routeProvider.when('/queries/:queryId', {
         templateUrl: '/views/query.html',

@@ -23,6 +23,10 @@ def get_query_runner(connection_type, connection_string):
     elif connection_type == 'url':
         from redash.data import query_runner_url
         runner = query_runner_url.url(connection_string)
+    elif connection_type == "mongo":
+        from redash.data import query_runner_mongodb
+        connection_params = json.loads(connection_string)
+        runner = query_runner_mongodb.mongodb(connection_params)
     else:
         from redash.data import query_runner_pg
         runner = query_runner_pg.pg(connection_string)

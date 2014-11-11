@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/bower_components/pivottable/dist/pivot.css">
     <link rel="stylesheet" href="/bower_components/cornelius/src/cornelius.css">
     <link rel="stylesheet" href="/bower_components/select2/select2.css">
+    <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css">
     <link rel="stylesheet" href="/bower_components/pace/themes/pace-theme-minimal.css">
     <link rel="stylesheet" href="/styles/redash.css">
     <!-- endbuild -->
@@ -65,6 +66,12 @@
                 </ul>
             </li>
         </ul>
+        <form class="navbar-form navbar-left" role="search" ng-submit="searchQueries()">
+            <div class="form-group">
+                <input type="text" ng-model="term" class="form-control" placeholder="Search queries...">
+            </div>
+            <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+        </form>
         <ul class="nav navbar-nav navbar-right">
             <p class="navbar-text avatar" ng-show="currentUser.id" ng-cloak>
                 <img ng-src="{{currentUser.gravatar_url}}" class="img-circle" alt="{{currentUser.name}}"/>
@@ -110,6 +117,7 @@
 <script src="/bower_components/mousetrap/plugins/global-bind/mousetrap-global-bind.js"></script>
 <script src="/bower_components/select2/select2.js"></script>
 <script src="/bower_components/angular-ui-select2/src/select2.js"></script>
+<script src="/bower_components/angular-ui-select/dist/select.js"></script>
 <script src="/bower_components/underscore.string/lib/underscore.string.js"></script>
 <script src="/bower_components/marked/lib/marked.js"></script>
 <script src="/scripts/ng_highchart.js"></script>
@@ -133,6 +141,7 @@
 <script src="/scripts/visualizations/base.js"></script>
 <script src="/scripts/visualizations/chart.js"></script>
 <script src="/scripts/visualizations/cohort.js"></script>
+<script src="/scripts/visualizations/counter.js"></script>
 <script src="/scripts/visualizations/table.js"></script>
 <script src="/scripts/visualizations/pivot.js"></script>
 <script src="/scripts/directives/directives.js"></script>

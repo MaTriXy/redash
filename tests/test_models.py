@@ -1,7 +1,8 @@
 import datetime
+import json
 from tests import BaseTestCase
 from redash import models
-from factories import dashboard_factory, query_factory, data_source_factory, query_result_factory
+from factories import dashboard_factory, query_factory, data_source_factory, query_result_factory, user_factory
 from redash.utils import gen_query_hash
 
 
@@ -28,6 +29,40 @@ class QueryTest(BaseTestCase):
         q = models.Query.get_by_id(q.id)
 
         self.assertNotEquals(old_hash, q.query_hash)
+
+    def test_search_finds_in_name(self):
+        q1 = query_factory.create(name="Testing search")
+        q2 = query_factory.create(name="Testing searching")
+        q3 = query_factory.create(name="Testing sea rch")
+
+        queries = models.Query.search("search")
+
+        self.assertIn(q1, queries)
+        self.assertIn(q2, queries)
+        self.assertNotIn(q3, queries)
+
+    def test_search_finds_in_description(self):
+        q1 = query_factory.create(description="Testing search")
+        q2 = query_factory.create(description="Testing searching")
+        q3 = query_factory.create(description="Testing sea rch")
+
+        queries = models.Query.search("search")
+
+        self.assertIn(q1, queries)
+        self.assertIn(q2, queries)
+        self.assertNotIn(q3, queries)
+
+    def test_search_by_id_returns_query(self):
+        q1 = query_factory.create(description="Testing search")
+        q2 = query_factory.create(description="Testing searching")
+        q3 = query_factory.create(description="Testing sea rch")
+
+
+        queries = models.Query.search(str(q3.id))
+
+        self.assertIn(q3, queries)
+        self.assertNotIn(q1, queries)
+        self.assertNotIn(q2, queries)
 
 
 class QueryResultTest(BaseTestCase):
@@ -93,6 +128,7 @@ class QueryResultTest(BaseTestCase):
 
         self.assertEqual(found_query_result.id, qr.id)
 
+
 class TestQueryResultStoreResult(BaseTestCase):
     def setUp(self):
         super(TestQueryResultStoreResult, self).setUp()
@@ -149,3 +185,37 @@ class TestQueryResultStoreResult(BaseTestCase):
         self.assertEqual(models.Query.get_by_id(query1.id)._data['latest_query_data'], query_result.id)
         self.assertEqual(models.Query.get_by_id(query2.id)._data['latest_query_data'], query_result.id)
         self.assertNotEqual(models.Query.get_by_id(query3.id)._data['latest_query_data'], query_result.id)
+
+
+class TestEvents(BaseTestCase):
+    def raw_event(self):
+        timestamp = 1411778709.791
+        user = user_factory.create()
+        created_at = datetime.datetime.utcfromtimestamp(timestamp)
+        raw_event = {"action": "view",
+                      "timestamp": timestamp,
+                      "object_type": "dashboard",
+                      "user_id": user.id,
+                      "object_id": 1}
+
+        return raw_event, user, created_at
+
+    def test_records_event(self):
+        raw_event, user, created_at = self.raw_event()
+
+        event = models.Event.record(raw_event)
+
+        self.assertEqual(event.user, user)
+        self.assertEqual(event.action, "view")
+        self.assertEqual(event.object_type, "dashboard")
+        self.assertEqual(event.object_id, 1)
+        self.assertEqual(event.created_at, created_at)
+
+    def test_records_additional_properties(self):
+        raw_event, _, _ = self.raw_event()
+        additional_properties = {'test': 1, 'test2': 2, 'whatever': "abc"}
+        raw_event.update(additional_properties)
+
+        event = models.Event.record(raw_event)
+
+        self.assertDictEqual(json.loads(event.additional_properties), additional_properties)
