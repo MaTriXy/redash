@@ -1,52 +1,120 @@
 <p align="center">
-  <img title="re:dash" src='https://raw.githubusercontent.com/EverythingMe/redash/screenshots/redash_logo.png' />
-
-</p>
-<p align="center">
-    <img title="Build Status" src='https://circleci.com/gh/EverythingMe/redash.png?circle-token=8a695aa5ec2cbfa89b48c275aea298318016f040'/>
+  <img title="Redash" src='https://redash.io/assets/images/logo.png' width="200px"/>
 </p>
 
-**_re:dash_** is our take on freeing the data within our company in a way that will better fit our culture and usage patterns.
+[![Documentation](https://img.shields.io/badge/docs-redash.io/help-brightgreen.svg)](https://redash.io/help/)
+[![GitHub Build](https://github.com/getredash/redash/actions/workflows/ci.yml/badge.svg)](https://github.com/getredash/redash/actions)
 
-Prior to **_re:dash_**, we tried to use traditional BI suites and discovered a set of bloated, technically challenged and slow tools/flows. What we were looking for was a more hacker'ish way to look at data, so we built one.
+Redash is designed to enable anyone, regardless of the level of technical sophistication, to harness the power of data big and small. SQL users leverage Redash to explore, query, visualize, and share data from any data sources. Their work in turn enables anybody in their organization to use the data. Every day, millions of users at thousands of organizations around the world use Redash to develop insights and make data-driven decisions.
 
-**_re:dash_** was built to allow fast and easy access to billions of records, that we process and collect using Amazon Redshift ("petabyte scale data warehouse" that "speaks" PostgreSQL).
-Today **_re:dash_** has support for querying multiple databases, including: Redshift, Google BigQuery, PostgreSQL, MySQL, Graphite and custom scripts.
+Redash features:
 
-**_re:dash_** consists of two parts:
+1. **Browser-based**: Everything in your browser, with a shareable URL.
+2. **Ease-of-use**: Become immediately productive with data without the need to master complex software.
+3. **Query editor**: Quickly compose SQL and NoSQL queries with a schema browser and auto-complete.
+4. **Visualization and dashboards**: Create [beautiful visualizations](https://redash.io/help/user-guide/visualizations/visualization-types) with drag and drop, and combine them into a single dashboard.
+5. **Sharing**: Collaborate easily by sharing visualizations and their associated queries, enabling peer review of reports and queries.
+6. **Schedule refreshes**: Automatically update your charts and dashboards at regular intervals you define.
+7. **Alerts**: Define conditions and be alerted instantly when your data changes.
+8. **REST API**: Everything that can be done in the UI is also available through REST API.
+9. **Broad support for data sources**: Extensible data source API with native support for a long list of common databases and platforms.
 
-1. **Query Editor**: think of [JS Fiddle](http://jsfiddle.net) for SQL queries. It's your way to share data in the organization in an open way, by sharing both the dataset and the query that generated it. This way everyone can peer review not only the resulting dataset but also the process that generated it. Also it's possible to fork it and generate new datasets and reach new insights.
-2. **Dashboards/Visualizations**: once you have a dataset, you can create different visualizations out of it, and then combine several visualizations into a single dashboard. Currently it supports charts, pivot table and cohorts.
-
-**_re:dash_** is a work in progress and has its rough edges and way to go to fulfill its full potential. The Query Editor part is quite solid, but the visualizations need more work to enrich them and to make them more user friendly.
-
-## Demo
-
-![Screenshots](https://raw.github.com/EverythingMe/redash/screenshots/screenshots.gif)
-
-You can try out the demo instance: http://demo.redash.io/ (login with any Google account).
+<img src="https://raw.githubusercontent.com/getredash/website/8e820cd02c73a8ddf4f946a9d293c54fd3fb08b9/website/_assets/images/redash-anim.gif" width="80%"/>
 
 ## Getting Started
 
-* [Setting up re:dash instance](https://github.com/EverythingMe/redash/wiki/Setting-up-re:dash-instance) (includes links to ready made AWS/GCE images).
-* Additional documentation in the [Wiki](https://github.com/everythingme/redash/wiki).
+* [Setting up Redash instance](https://redash.io/help/open-source/setup) (includes links to ready-made AWS/GCE images).
+* [Documentation](https://redash.io/help/).
 
+## Supported Data Sources
 
-## Getting help
+Redash supports more than 35 SQL and NoSQL [data sources](https://redash.io/help/data-sources/supported-data-sources). It can also be extended to support more. Below is a list of built-in sources:
 
-* [Google Group (mailing list)](https://groups.google.com/forum/#!forum/redash-users): the best place to get updates about new releases or ask general questions.
-* Find us [on gitter](https://gitter.im/EverythingMe/redash#) (chat).
-* Contact Arik, the maintainer directly: arik@everything.me.
+- Amazon Athena
+- Amazon CloudWatch / Insights
+- Amazon DynamoDB
+- Amazon Redshift
+- ArangoDB
+- Axibase Time Series Database
+- Apache Cassandra
+- ClickHouse
+- CockroachDB
+- Couchbase
+- CSV
+- Databricks
+- DB2 by IBM
+- Dgraph
+- Apache Drill
+- Apache Druid
+- e6data
+- Eccenca Corporate Memory
+- Elasticsearch
+- Exasol
+- Microsoft Excel
+- Firebolt
+- Databend
+- Google Analytics
+- Google BigQuery
+- Google Spreadsheets
+- Graphite
+- Greenplum
+- Apache Hive
+- Apache Impala
+- InfluxDB
+- InfluxDBv2
+- IBM Netezza Performance Server
+- JIRA (JQL)
+- JSON
+- Apache Kylin
+- OmniSciDB (Formerly MapD)
+- MariaDB
+- MemSQL
+- Microsoft Azure Data Warehouse / Synapse
+- Microsoft Azure SQL Database
+- Microsoft Azure Data Explorer / Kusto
+- Microsoft SQL Server
+- MongoDB
+- MySQL
+- Oracle
+- Apache Phoenix
+- Apache Pinot
+- PostgreSQL
+- Presto
+- Prometheus
+- Python
+- Qubole
+- Rockset
+- RisingWave
+- Salesforce
+- ScyllaDB
+- Shell Scripts
+- Snowflake
+- SPARQL
+- SQLite
+- TiDB
+- Tinybird
+- TreasureData
+- Trino
+- Uptycs
+- Vertica
+- Yandex AppMetrrica
+- Yandex Metrica
 
-## Roadmap
+## Getting Help
 
-TBD.
+* Issues: https://github.com/getredash/redash/issues
+* Discussion Forum: https://github.com/getredash/redash/discussions/
+* Development Discussion: https://discord.gg/tN5MdmfGBp
 
 ## Reporting Bugs and Contributing Code
 
-* Want to report a bug or request a feature? Please open [an issue](https://github.com/everythingme/redash/issues/new).
-* Want to help us build **_re:dash_**? Fork the project and make a pull request. We need all the help we can get!
+* Want to report a bug or request a feature? Please open [an issue](https://github.com/getredash/redash/issues/new).
+* Want to help us build **_Redash_**? Fork the project, edit in a [dev environment](https://github.com/getredash/redash/wiki/Local-development-setup) and make a pull request. We need all the help we can get!
+
+## Security
+
+Please email security@redash.io to report any security vulnerabilities. We will acknowledge receipt of your vulnerability and strive to send you regular updates about our progress. If you're curious about the status of your disclosure please feel free to email us again. If you want to encrypt your disclosure email, you can use [this PGP key](https://keybase.io/arikfr/key.asc).
 
 ## License
 
-See [LICENSE](https://github.com/EverythingMe/redash/blob/master/LICENSE) file.
+BSD-2-Clause.
